@@ -4,20 +4,26 @@ import PropTypes from 'prop-types';
 import CubeTable from "./components/CubeTable";
 import CubeTopPanel from "./components/CubeTopPanel";
 
+import { Provider } from 'react-redux'
+import configureStore from './store';
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faCaretUp, faCaretDown, faCaretLeft, faCaretRight, faCog, faPrint, faTimes, faQuestion } from '@fortawesome/free-solid-svg-icons'
 library.add(faCaretUp, faCaretDown, faCaretLeft, faCaretRight, faCog, faPrint, faTimes, faQuestion);
+import './styles/index.css'
+
 
 class Cube extends Component {
     constructor(props) {
         super(props);
     }
     render() {
-        return <div className="cube">
-            <CubeTopPanel />
-            <CubeTable />
-        </div>
+        return <Provider store={configureStore()}>
+            <div className="cube">
+                <CubeTopPanel/>
+                <CubeTable/>
+            </div>
+        </Provider>
     }
 }
 
