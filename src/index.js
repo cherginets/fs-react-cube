@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import CubeTable from "./CubeTable";
-import CubeTopPanel from "./CubeTopPanel";
+import CubeTable from "./components/CubeTable";
+import CubeTopPanel from "./components/CubeTopPanel";
+
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faCaretUp, faCaretDown, faCaretLeft, faCaretRight, faCog, faPrint, faTimes, faQuestion } from '@fortawesome/free-solid-svg-icons'

@@ -124,7 +124,7 @@ class CubeTable extends Component {
         }
     }
 
-    get_init_trees = () => {
+    get_init_trees() {
         let measures_head = this.state.list_measures_head.map(measure_code => copy(this.init_trees[this.init_trees_map[measure_code]])),
             measures_head_tree = this.fullTree_get(this.state.list_measures_head),
 
@@ -143,7 +143,7 @@ class CubeTable extends Component {
         }
     };
 
-    prepareTree = (tree, lvl = 0, path = []) => {
+    prepareTree(tree, lvl = 0, path = []) {
         tree._measure_path = path;
         if (tree.childs && tree.childs.length > 0) {
             tree.childs = tree.childs.map((child, i) => this.prepareTree(child, lvl + 1, path.concat(['childs', i])))
@@ -184,7 +184,7 @@ class CubeTable extends Component {
         //endregion
     }
 
-    getTrs = (tree, param_length = 1) => {
+    getTrs (tree, param_length = 1) {
         let trs = [];
         if (tree.hidden) {
             return trs;
@@ -213,10 +213,10 @@ class CubeTable extends Component {
         }
         return trs;
     };
-    getTrsSide = () => {
+    getTrsSide () {
         return this.getTrs(this.state.measures_side_tree)
     };
-    getTrsHead = () => {
+    getTrsHead () {
         let trs = this.getTrs(this.state.measures_head_tree);
 
         let convert_trs_for_head = (trs) => {
@@ -379,7 +379,7 @@ class CubeTable extends Component {
     }
 
     // todo: Переписать блок настроек по нормальному
-    swapArray = (arr, oldPlace, newPlace) => {
+    swapArray (arr, oldPlace, newPlace) {
         // Проверим выход за пределы массива
         if((Math.min(oldPlace, newPlace) < 0) || (Math.max(oldPlace, newPlace) >= arr.length)) {
             console.error('Out of range')
@@ -389,7 +389,7 @@ class CubeTable extends Component {
         arr.splice((newPlace > 0)? newPlace-1: 0, 0, item[0])
         return arr;
     };
-    settings_get_values = () => {
+    settings_get_values () {
         let $settings_side_measures = $('#settings_side_measures');
         let $settings_head_measures = $('#settings_head_measures');
         return {
@@ -399,7 +399,7 @@ class CubeTable extends Component {
             head_options_count: $settings_head_measures[0].options.length,
         }
     };
-    settings_check = () => {
+    settings_check () {
         console.log('this.state', this.state);
         let values = this.settings_get_values();
         if(values.side.length > 0 && values.head.length > 0) {
@@ -408,7 +408,7 @@ class CubeTable extends Component {
         }
         return true;
     };
-    settings_up = () => {
+    settings_up () {
         if(!this.settings_check()) return false;
 
         let values = this.settings_get_values();
@@ -436,7 +436,7 @@ class CubeTable extends Component {
             }, () => this.setState({...this.get_init_trees()}));
         }
     };
-    settings_left = () => {
+    settings_left () {
         if(!this.settings_check()) return false;
         let values = this.settings_get_values();
 
@@ -459,7 +459,7 @@ class CubeTable extends Component {
         }
         console.info('settings_left', values)
     };
-    settings_right = () => {
+    settings_right () {
         if(!this.settings_check()) return false;
 
         let values = this.settings_get_values();
@@ -481,7 +481,7 @@ class CubeTable extends Component {
         }
     };
 
-    handleClickToggleSideChilds = (tree) => {
+    handleClickToggleSideChilds (tree) {
         let new_hidden = !tree.hidden_childs,
             new_childs = tree.childs.map(child => ({...child, hidden: new_hidden}));
 
@@ -494,7 +494,7 @@ class CubeTable extends Component {
             measures_side_tree: full_tree,
         })
     };
-    handleClickToggleHeadChilds = (tree) => {
+    handleClickToggleHeadChilds (tree) {
         let new_hidden = !tree.hidden_childs,
             new_childs = tree.childs.map(child => ({...child, hidden: new_hidden}));
 
@@ -529,7 +529,7 @@ class CubeTable extends Component {
 
         return length;
     }
-    tree_set_element = (tree, path, element) => {
+    tree_set_element (tree, path, element) {
         let eval_str = `tree${path.map(key => `['${key}']`).join('')} = element`;
         element = copy(element);// Что бы не было варнинга
 
@@ -537,7 +537,7 @@ class CubeTable extends Component {
         return tree;
     };
 
-    fullTree_get = (measures) => {
+    fullTree_get (measures) {
         let result_tree = copy(this.init_trees[this.init_trees_map[measures[0]]]);
 
         if(measures[1]) {
