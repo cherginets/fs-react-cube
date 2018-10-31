@@ -5,6 +5,11 @@
   background: white;
   border: $border;
   border-radius: 10px;
+  width: 734px;
+
+  * {
+    box-sizing: content-box;
+  }
 
   table {
     background-color: white;
@@ -17,6 +22,7 @@
         height: 20px;
         padding: 5px;
         font-size: 12px;
+        text-align: center;
       }
     }
     th {

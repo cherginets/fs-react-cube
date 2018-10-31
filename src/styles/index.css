@@ -8,20 +8,22 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace; }
 
-.cube-no-border {
-  border: none !important; }
-.cube-fa {
-  font-size: 20px;
-  cursor: pointer;
-  opacity: 0.8; }
-  .cube-fa:hover {
-    opacity: 0.9; }
-  .cube-fa:active {
-    opacity: 1; }
-.cube-m_ml10 {
-  margin-left: 10px; }
-.cube-m_mla {
-  margin-left: auto; }
+.cube {
+  width: 734px; }
+  .cube-no-border {
+    border: none !important; }
+  .cube-fa {
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0.8; }
+    .cube-fa:hover {
+      opacity: 0.9; }
+    .cube-fa:active {
+      opacity: 1; }
+  .cube-m_ml10 {
+    margin-left: 10px; }
+  .cube-m_mla {
+    margin-left: auto; }
 
 .cube-modal {
   position: relative;
@@ -55,7 +57,10 @@ code {
 .cube-table {
   background: white;
   border: 1px solid #e4e4e4;
-  border-radius: 10px; }
+  border-radius: 10px;
+  width: 734px; }
+  .cube-table * {
+    box-sizing: content-box; }
   .cube-table table {
     background-color: white;
     width: auto; }
@@ -65,7 +70,8 @@ code {
       min-height: 20px;
       height: 20px;
       padding: 5px;
-      font-size: 12px; }
+      font-size: 12px;
+      text-align: center; }
     .cube-table table th {
       background: #f3f3f3;
       color: black; }
