@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {connect} from 'react-redux';
-import { bindActionCreators } from 'redux'
+import {bindActionCreators} from 'redux'
 import {settings_close_modal} from "../actions/SettingsActions";
 
 class CubeSettingsModal extends Component {
@@ -16,16 +16,25 @@ class CubeSettingsModal extends Component {
             <div className="cube-modal" onClick={e => e.stopPropagation()}>
                 <table className={"cube-settings-table"}>
                     <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Side</th>
-                            <th>Position</th>
-                        </tr>
+                    <tr>
+                        <th>Name</th>
+                        <th>Side</th>
+                        <th>Position</th>
+                    </tr>
                     </thead>
+                    <tbody>
+                    {this.props.measures.map((measure, i) => {
+                        return <tr>
+                            <td>{measure.name}</td>
+                            <td>{measure.name}</td>
+                            <td>{measure.name}</td>
+                        </tr>
+                    })}
+                    </tbody>
                 </table>
 
                 <FontAwesomeIcon className="cube-fa cube-modal-close" icon={'times'} title={"Close"}
-                    onClick={this.props.settings_close_modal}
+                                 onClick={this.props.settings_close_modal}
                 />
                 <FontAwesomeIcon className="cube-fa cube-modal-help" icon={'question'} title={"Help"}/>
             </div>
@@ -35,6 +44,7 @@ class CubeSettingsModal extends Component {
 
 const mapStateToProps = (state, ownProps) => ({
     modal_show: state.settings.modal_show,
+    measures: state.table.measures,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({

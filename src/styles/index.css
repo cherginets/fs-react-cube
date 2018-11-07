@@ -87,15 +87,15 @@ code {
     .cube-table-header th {
       border-bottom: 1px solid #e4e4e4;
       border-right: 1px solid #e4e4e4; }
-  .cube-table-sidebar {
+  .cube-table-left {
     height: 310px;
     float: left;
     overflow: hidden;
     border-top: 1px solid #e4e4e4;
     border-right: 1px solid #e4e4e4; }
-    .cube-table-sidebar tr:first-child th {
+    .cube-table-left tr:first-child th {
       border-top: none; }
-    .cube-table-sidebar th {
+    .cube-table-left th {
       border-right: 1px solid #e4e4e4;
       border-bottom: 1px solid #e4e4e4; }
   .cube-table-body {

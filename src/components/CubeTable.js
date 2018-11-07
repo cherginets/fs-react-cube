@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import $ from 'jquery';
 import PropTypes from 'prop-types';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {connect} from 'react-redux';
+import { bindActionCreators } from 'redux'
 
 window.$ = $;
 
@@ -25,97 +27,18 @@ class CubeTable extends Component {
     constructor(props) {
         super(props);
 
-        let measures = [
-            {
-                name: "Measure 1 (Regions)",
-                tree: {
-                    name: "All regions",
-                    code: "regions",
-                    hidden: false,
-                    childs: [
-                        {
-                            name: "Russia",
-                            hidden: false,
-                            childs: [
-                                {
-                                    name: "Moscow",
-                                },
-                                {
-                                    name: "Lipetsk",
-                                },
-                                {
-                                    name: "Voronesh",
-                                },
-                            ]
-                        },
-                        {
-                            name: "USA",
-                            hidden: false,
-                            childs: [
-                                {
-                                    name: "California",
-                                },
-                                {
-                                    name: "Washington",
-                                },
-                            ]
-                        },
-                        {
-                            name: "Georgia",
-                            hidden: false,
-                        }
-                    ]
-                },
-            },
-            {
-                name: "Measure 2 (Products)",
-                tree: {
-                    name: "All products",
-                    code: "products",
-                    childs: [
-                        {name: "Paper"},
-                        {name: "Tables"},
-                        {name: "Pencils"},
-                    ]
-                }
-            },
-            {
-                name: "Measure 3 (Years)",
-                tree: {
-                    name: "All years",
-                    code: "years",
-                    childs: [
-                        {name: "2018", childs: [{name: "Q 1"}, {name: "Q 2"}, {name: "Q 3"}, {name: "Q 4"}]},
-                        {name: "2017", childs: [{name: "Q 1"}, {name: "Q 2"}, {name: "Q 3"}, {name: "Q 4"}]},
-                        {name: "2016", childs: [{name: "Q 1"}, {name: "Q 2"}, {name: "Q 3"}, {name: "Q 4"}]},
-                    ]
-                }
-            },
-            {
-                name: "Measure 4 (Scenarios)",
-
-                tree: {
-                    name: "All scenarios",
-                    code: "scenarios",
-                    childs: [
-                        {name: "Actual"},
-                        {name: "Budget"},
-                    ]
-                }
-            },
-        ];
+        let measures = props.measures,
+            init_list_measures_head = props.measures_list_top,
+            init_list_measures_left = props.measures_list_left;
 
         this.init_trees = measures.map(measure => this.prepareTree(measure.tree));
         this.init_trees_map = create_map(this.init_trees, 'code');
-
-        let init_list_measures_head = ['regions', 'products'],
-            init_list_measures_side = ['years', 'scenarios'];
 
         this.state = {
             trees: this.init_trees,
             trees_map: this.init_trees_map,
             list_measures_head: init_list_measures_head,
-            list_measures_side: init_list_measures_side,
+            list_measures_left: init_list_measures_left,
         };
 
         this.state = {
@@ -128,15 +51,15 @@ class CubeTable extends Component {
         let measures_head = this.state.list_measures_head.map(measure_code => copy(this.init_trees[this.init_trees_map[measure_code]])),
             measures_head_tree = this.fullTree_get(this.state.list_measures_head),
 
-            measures_side = this.state.list_measures_side.map(measure_code => copy(this.init_trees[this.init_trees_map[measure_code]])),
-            measures_side_tree = this.fullTree_get(this.state.list_measures_side);
+            measures_left = this.state.list_measures_left.map(measure_code => copy(this.init_trees[this.init_trees_map[measure_code]])),
+            measures_left_tree = this.fullTree_get(this.state.list_measures_left);
 
         measures_head_tree = this.fullTree_setpaths(measures_head_tree);
-        measures_side_tree = this.fullTree_setpaths(measures_side_tree);
+        measures_left_tree = this.fullTree_setpaths(measures_left_tree);
 
         return {
-            measures_side: measures_side,
-            measures_side_tree: measures_side_tree,
+            measures_left: measures_left,
+            measures_left_tree: measures_left_tree,
 
             measures_head: measures_head,
             measures_head_tree: measures_head_tree,
@@ -171,13 +94,13 @@ class CubeTable extends Component {
         //region fixedTable jquery
         let fixedTable;
         fixedTable = function (el) {
-            let $body, $header, $sidebar;
+            let $body, $topside, $leftside;
             $body = $(el).find('.cube-table-body');
-            $sidebar = $(el).find('.cube-table-sidebar table');
-            $header = $(el).find('.cube-table-header table');
+            $leftside = $(el).find('.cube-table-left table');
+            $topside = $(el).find('.cube-table-header table');
             return $($body).scroll(function () {
-                $($sidebar).css('margin-top', -$($body).scrollTop());
-                return $($header).css('margin-left', -$($body).scrollLeft());
+                $($leftside).css('margin-top', -$($body).scrollTop());
+                return $($topside).css('margin-left', -$($body).scrollLeft());
             });
         };
         new fixedTable($('#cubeTable'));
@@ -213,8 +136,8 @@ class CubeTable extends Component {
         }
         return trs;
     };
-    getTrsSide () {
-        return this.getTrs(this.state.measures_side_tree)
+    getTrsLeft () {
+        return this.getTrs(this.state.measures_left_tree)
     };
     getTrsHead () {
         let trs = this.getTrs(this.state.measures_head_tree);
@@ -290,25 +213,26 @@ class CubeTable extends Component {
     };
 
     render() {
-        let headers_rows_count = this.state.list_measures_head.length,
-            sidebar_cols_count = this.state.list_measures_side.length;
+        let top_rows_count = this.state.list_measures_head.length,
+            left_cols_count = this.state.list_measures_left.length;
 
         let trs_head = this.getTrsHead(),
-            trs_side = this.getTrsSide();
+            trs_left = this.getTrsLeft();
 
         console.groupCollapsed('render()');
+        console.info('this.props', this.props);
         console.info('trs_head', trs_head);
-        console.info('trs_side', trs_side);
+        console.info('trs_left', trs_left);
         console.info('measures_head_tree', this.state.measures_head_tree);
-        console.info('measures_side_tree', this.state.measures_side_tree);
+        console.info('measures_left_tree', this.state.measures_left_tree);
         console.groupEnd();
 
         return (
             <div>
                 <div className="cube-table" id="cubeTable">
                     <header className="cube-table-header" style={{
-                        marginLeft: (110 * sidebar_cols_count + 1) + "px",
-                        height: (30 * headers_rows_count + 1) + "px",
+                        marginLeft: (110 * left_cols_count + 1) + "px",
+                        height: (30 * top_rows_count + 1) + "px",
                     }}>
                         <table cellSpacing={0}>
                             <thead>
@@ -331,14 +255,14 @@ class CubeTable extends Component {
                             </thead>
                         </table>
                     </header>
-                    <aside className="cube-table-sidebar" style={{width: (110 * sidebar_cols_count + 1) + 'px'}}>
+                    <aside className="cube-table-left" style={{width: (110 * left_cols_count + 1) + 'px'}}>
                         <table cellSpacing={0}>
                             <tbody>
-                            {trs_side.map((tr, i) => {
+                            {trs_left.map((tr, i) => {
                                 return <tr key={i}>
                                     {tr.tds.map((td, j) => {
                                         return <th rowSpan={td.rowSpan} key={j}
-                                                   onClick={this.handleClickToggleSideChilds.bind(this, td)}>
+                                                   onClick={this.handleClickToggleLeftChilds.bind(this, td)}>
                                             {td.name}
                                             <span style={{marginLeft: "7px"}}>
                                         {td.has_childs ? (!td.hidden_childs ?
@@ -360,7 +284,7 @@ class CubeTable extends Component {
                     <div className="cube-table-body">
                         <table cellSpacing={0}>
                             <tbody>
-                            {trs_side.map((side, i) => {
+                            {trs_left.map((left, i) => {
                                 return <tr key={i}>
                                     {trs_head[trs_head.length - 1].tds.map((head, j) => {
                                         return <td key={j}>
@@ -378,120 +302,17 @@ class CubeTable extends Component {
         );
     }
 
-    // todo: Переписать блок настроек по нормальному
-    swapArray (arr, oldPlace, newPlace) {
-        // Проверим выход за пределы массива
-        if((Math.min(oldPlace, newPlace) < 0) || (Math.max(oldPlace, newPlace) >= arr.length)) {
-            console.error('Out of range')
-            return null;
-        }
-        const item = arr.splice(oldPlace, 1);
-        arr.splice((newPlace > 0)? newPlace-1: 0, 0, item[0])
-        return arr;
-    };
-    settings_get_values () {
-        let $settings_side_measures = $('#settings_side_measures');
-        let $settings_head_measures = $('#settings_head_measures');
-        return {
-            side: $settings_side_measures.val(),
-            head: $settings_head_measures.val(),
-            side_options_count: $settings_side_measures[0].options.length,
-            head_options_count: $settings_head_measures[0].options.length,
-        }
-    };
-    settings_check () {
-        console.log('this.state', this.state);
-        let values = this.settings_get_values();
-        if(values.side.length > 0 && values.head.length > 0) {
-            alert('Для перемещения надо выбрать только ОДНО значение! (убрать значение можно с нажатым CTRL)');
-            return false;
-        }
-        return true;
-    };
-    settings_up () {
-        if(!this.settings_check()) return false;
-
-        let values = this.settings_get_values();
-        if(values.side[0]) {
-            let list_measures_side = this.state.list_measures_side,
-                index = list_measures_side.indexOf(values.side[0]);
-
-            if(index === 0) {
-                return false;
-            }
-            list_measures_side = this.swapArray(list_measures_side, index, index - 1);
-            this.setState({
-                list_measures_side: list_measures_side,
-            }, () => this.setState({...this.get_init_trees()}));
-        } else if(values.head[0]) {
-            let list_measures_head = this.state.list_measures_head,
-                index = list_measures_head.indexOf(values.head[0]);
-
-            if(index === 0) {
-                return false;
-            }
-            list_measures_head = this.swapArray(list_measures_head, index, index - 1);
-            this.setState({
-                list_measures_head: list_measures_head,
-            }, () => this.setState({...this.get_init_trees()}));
-        }
-    };
-    settings_left () {
-        if(!this.settings_check()) return false;
-        let values = this.settings_get_values();
-
-
-        if(values.head[0]) {
-            if(values.head_options_count === 1) {
-                alert('В верхней части должна остаться хотя бы одна строка!');
-                return false;
-            }
-            let list_measures_side = this.state.list_measures_side,
-                list_measures_head = this.state.list_measures_head;
-
-            list_measures_head.splice(list_measures_head.indexOf(values.head[0]), 1);
-            list_measures_side.push(values.head[0]);
-
-            this.setState({
-                list_measures_side: list_measures_side,
-                list_measures_head: list_measures_head,
-            }, () => this.setState({...this.get_init_trees()}))
-        }
-        console.info('settings_left', values)
-    };
-    settings_right () {
-        if(!this.settings_check()) return false;
-
-        let values = this.settings_get_values();
-        if(values.side[0]) {
-            if (values.side_options_count === 1) {
-                alert('В левой части должна остаться хотя бы одна колонка!');
-                return false;
-            }
-            let list_measures_side = this.state.list_measures_side,
-                list_measures_head = this.state.list_measures_head;
-
-            list_measures_side.splice(list_measures_side.indexOf(values.side[0]), 1);
-            list_measures_head.push(values.side[0]);
-
-            this.setState({
-                list_measures_side: list_measures_side,
-                list_measures_head: list_measures_head,
-            }, () => this.setState({...this.get_init_trees()}))
-        }
-    };
-
-    handleClickToggleSideChilds (tree) {
+    handleClickToggleLeftChilds (tree) {
         let new_hidden = !tree.hidden_childs,
             new_childs = tree.childs.map(child => ({...child, hidden: new_hidden}));
 
-        let full_tree = this.tree_set_element(this.state.measures_side_tree, tree._path, {
+        let full_tree = this.tree_set_element(this.state.measures_left_tree, tree._path, {
             ...tree,
             childs: new_childs,
             hidden_childs: new_hidden,
         });
         this.setState({
-            measures_side_tree: full_tree,
+            measures_left_tree: full_tree,
         })
     };
     handleClickToggleHeadChilds (tree) {
@@ -585,4 +406,14 @@ CubeTable.propTypes = {
 
 };
 
-export default CubeTable;
+const mapStateToProps = (state, ownProps) => ({
+    measures: state.table.measures,
+    measures_list_top: state.table.measures_list_top,
+    measures_list_left: state.table.measures_list_left,
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+    // settings_close_modal: settings_close_modal,
+}, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(CubeTable);

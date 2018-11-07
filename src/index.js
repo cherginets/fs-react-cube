@@ -16,9 +16,17 @@ import './styles/index.css'
 class Cube extends Component {
     constructor(props) {
         super(props);
+
+        this.store = configureStore();
+        this.store.dispatch({type: "SET_INIT_PROPS",
+            measures: props.measures,
+            measures_list_top: props.measures_list_top,
+            measures_list_left: props.measures_list_left,
+        });
     }
+
     render() {
-        return <Provider store={configureStore()}>
+        return <Provider store={this.store}>
             <div className="cube">
                 <CubeTopPanel/>
                 <CubeTable/>
@@ -107,6 +115,8 @@ Cube.defaultProps = {
             }
         },
     ],
+    measures_list_top: ['regions', 'products'],
+    measures_list_left: ['years', 'scenarios'],
 };
 
 Cube.propTypes = {

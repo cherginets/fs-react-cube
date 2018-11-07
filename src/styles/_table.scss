@@ -1,4 +1,4 @@
-//$sidebar-cols-count: 1;
+//$left-cols-count: 1;
 //$header-rows-count: 1;
 
 .cube-table {
@@ -33,7 +33,7 @@
   &-header {
     width: 510px;
     //height: 30px * $header-rows-count + 2;
-    //margin-left: 110px * $sidebar-cols-count + 2;
+    //margin-left: 110px * $left-cols-count + 2;
     overflow: hidden;
     tr:first-child th {
       border-top: none;
@@ -49,8 +49,8 @@
       border-right: $border;
     }
   }
-  &-sidebar {
-    //width: 110px * $sidebar-cols-count + 3px;
+  &-left {
+    //width: 110px * $left-cols-count + 3px;
     height: 310px;
     float: left;
     overflow: hidden;
