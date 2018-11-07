@@ -28,7 +28,7 @@ class CubeTable extends Component {
         super(props);
 
         let measures = props.measures,
-            init_list_measures_head = props.measures_list_top,
+            init_list_measures_top = props.measures_list_top,
             init_list_measures_left = props.measures_list_left;
 
         this.init_trees = measures.map(measure => this.prepareTree(measure.tree));
@@ -37,7 +37,7 @@ class CubeTable extends Component {
         this.state = {
             trees: this.init_trees,
             trees_map: this.init_trees_map,
-            list_measures_head: init_list_measures_head,
+            list_measures_top: init_list_measures_top,
             list_measures_left: init_list_measures_left,
         };
 
@@ -48,21 +48,21 @@ class CubeTable extends Component {
     }
 
     get_init_trees() {
-        let measures_head = this.state.list_measures_head.map(measure_code => copy(this.init_trees[this.init_trees_map[measure_code]])),
-            measures_head_tree = this.fullTree_get(this.state.list_measures_head),
+        let measures_top = this.state.list_measures_top.map(measure_code => copy(this.init_trees[this.init_trees_map[measure_code]])),
+            measures_top_tree = this.fullTree_get(this.state.list_measures_top),
 
             measures_left = this.state.list_measures_left.map(measure_code => copy(this.init_trees[this.init_trees_map[measure_code]])),
             measures_left_tree = this.fullTree_get(this.state.list_measures_left);
 
-        measures_head_tree = this.fullTree_setpaths(measures_head_tree);
+        measures_top_tree = this.fullTree_setpaths(measures_top_tree);
         measures_left_tree = this.fullTree_setpaths(measures_left_tree);
 
         return {
             measures_left: measures_left,
             measures_left_tree: measures_left_tree,
 
-            measures_head: measures_head,
-            measures_head_tree: measures_head_tree,
+            measures_top: measures_top,
+            measures_top_tree: measures_top_tree,
         }
     };
 
@@ -97,7 +97,7 @@ class CubeTable extends Component {
             let $body, $topside, $leftside;
             $body = $(el).find('.cube-table-body');
             $leftside = $(el).find('.cube-table-left table');
-            $topside = $(el).find('.cube-table-header table');
+            $topside = $(el).find('.cube-table-top table');
             return $($body).scroll(function () {
                 $($leftside).css('margin-top', -$($body).scrollTop());
                 return $($topside).css('margin-left', -$($body).scrollLeft());
@@ -139,10 +139,10 @@ class CubeTable extends Component {
     getTrsLeft () {
         return this.getTrs(this.state.measures_left_tree)
     };
-    getTrsHead () {
-        let trs = this.getTrs(this.state.measures_head_tree);
+    getTrsTop () {
+        let trs = this.getTrs(this.state.measures_top_tree);
 
-        let convert_trs_for_head = (trs) => {
+        let convert_trs_for_top = (trs) => {
             let result_trs = [], added_td;
 
             for (let i = trs.length - 1; i >= 0; i--) {
@@ -209,38 +209,38 @@ class CubeTable extends Component {
             return result_trs;
         };
 
-        return convert_trs_for_head(trs);
+        return convert_trs_for_top(trs);
     };
 
     render() {
-        let top_rows_count = this.state.list_measures_head.length,
+        let top_rows_count = this.state.list_measures_top.length,
             left_cols_count = this.state.list_measures_left.length;
 
-        let trs_head = this.getTrsHead(),
+        let trs_top = this.getTrsTop(),
             trs_left = this.getTrsLeft();
 
         console.groupCollapsed('render()');
         console.info('this.props', this.props);
-        console.info('trs_head', trs_head);
+        console.info('trs_top', trs_top);
         console.info('trs_left', trs_left);
-        console.info('measures_head_tree', this.state.measures_head_tree);
+        console.info('measures_top_tree', this.state.measures_top_tree);
         console.info('measures_left_tree', this.state.measures_left_tree);
         console.groupEnd();
 
         return (
             <div>
                 <div className="cube-table" id="cubeTable">
-                    <header className="cube-table-header" style={{
+                    <header className="cube-table-top" style={{
                         marginLeft: (110 * left_cols_count + 1) + "px",
                         height: (30 * top_rows_count + 1) + "px",
                     }}>
                         <table cellSpacing={0}>
                             <thead>
-                            {trs_head.map((tr, i) => {
+                            {trs_top.map((tr, i) => {
                                 return <tr key={i}>
                                     {tr.tds.map((td, j) => {
                                         return <th colSpan={td.colSpan} key={j}
-                                                   onClick={this.handleClickToggleHeadChilds.bind(this, td)}>
+                                                   onClick={this.handleClickToggleTopChilds.bind(this, td)}>
                                             {td.name}
                                             <span style={{marginLeft: "7px"}}>
                                         {td.has_childs ? (!td.hidden_childs ?
@@ -286,7 +286,7 @@ class CubeTable extends Component {
                             <tbody>
                             {trs_left.map((left, i) => {
                                 return <tr key={i}>
-                                    {trs_head[trs_head.length - 1].tds.map((head, j) => {
+                                    {trs_top[trs_top.length - 1].tds.map((head, j) => {
                                         return <td key={j}>
                                             cell{i}-{j}
                                         </td>
@@ -315,17 +315,17 @@ class CubeTable extends Component {
             measures_left_tree: full_tree,
         })
     };
-    handleClickToggleHeadChilds (tree) {
+    handleClickToggleTopChilds (tree) {
         let new_hidden = !tree.hidden_childs,
             new_childs = tree.childs.map(child => ({...child, hidden: new_hidden}));
 
-        let full_tree = this.tree_set_element(this.state.measures_head_tree, tree._path, {
+        let full_tree = this.tree_set_element(this.state.measures_top_tree, tree._path, {
             ...tree,
             childs: new_childs,
             hidden_childs: new_hidden,
         });
         this.setState({
-            measures_head_tree: full_tree,
+            measures_top_tree: full_tree,
         })
     };
 

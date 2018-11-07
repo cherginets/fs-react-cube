@@ -1,5 +1,5 @@
 //$left-cols-count: 1;
-//$header-rows-count: 1;
+//$top-rows-count: 1;
 
 .cube-table {
   background: white;
@@ -30,9 +30,9 @@
       color: black;
     }
   }
-  &-header {
+  &-top {
     width: 510px;
-    //height: 30px * $header-rows-count + 2;
+    //height: 30px * $top-rows-count + 2;
     //margin-left: 110px * $left-cols-count + 2;
     overflow: hidden;
     tr:first-child th {
