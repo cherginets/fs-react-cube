@@ -29,7 +29,7 @@ class Cube extends Component {
             measures_left_codes = props.measures_list_left && props.measures_list_left.length > 0 ?
                 props.measures_list_left : [measures[1].tree.code];
 
-        this.init_trees = measures.map(measure => this.prepareTree(measure.tree));
+        this.init_trees = measures.map(measure => SideTree.prepare_tree(measure.tree));
         this.init_trees_map = create_map(this.init_trees, 'code');
 
         let measures_top = measures_top_codes.map(measure_code => this.init_trees[this.init_trees_map[measure_code]]),
@@ -49,42 +49,14 @@ class Cube extends Component {
     }
 
     get_init_trees() {
-        let measures_top_tree = this.fullTree_get(this.state.measures_top),
-            measures_left_tree = this.fullTree_get(this.state.measures_left);
-
-        measures_top_tree = this.fullTree_setpaths(measures_top_tree);
-        measures_left_tree = this.fullTree_setpaths(measures_left_tree);
+        let measures_top_tree = new SideTree(this.state.measures_top),
+            measures_left_tree = new SideTree(this.state.measures_left);
 
         return {
             measures_left_tree: measures_left_tree,
             measures_top_tree: measures_top_tree,
         }
     };
-
-    prepareTree(tree, lvl = 0, path = []) {
-        tree._measure_path = path;
-        if (tree.childs && tree.childs.length > 0) {
-            tree.childs = tree.childs.map((child, i) => this.prepareTree(child, lvl + 1, path.concat(['childs', i])))
-        } else {
-            tree.childs = [];
-        }
-        tree.hidden = lvl !== 0;
-        tree.hidden_childs = typeof tree.hidden_childs !== 'undefined' ? tree.hidden_childs : true;
-
-        tree.lvl = lvl;
-        tree.code = tree.code ? tree.code : tree.name;
-        tree.has_childs = tree.childs.length > 0;
-
-        return tree;
-    };
-
-    getTreeIterator(tree, callback = () => {
-    }) {
-        callback(tree);
-        let result = [tree];
-        tree.childs.forEach(child => result = result.concat(this.getTreeIterator(child, callback)));
-        return result;
-    }
 
     componentDidMount() {
         //region fixedTable jquery
@@ -103,116 +75,11 @@ class Cube extends Component {
         //endregion
     }
 
-    getTrs(tree, param_length = 1) {
-        let trs = [];
-        if (tree.hidden) {
-            return trs;
-        }
-        if (tree._subtree) {
-            trs = this.getTrs(tree._subtree, param_length);
-            trs = copy(trs);
-
-            let length = this.tree_get_deep_length(tree._subtree, (tree) => !tree.hidden);
-            length = length * param_length;
-            trs[0].tds.unshift({...tree, rowSpan: length});
-            tree.childs
-                .filter((child) => !child.hidden)
-                .forEach(child => {
-                    trs = trs.concat(this.getTrs(child));
-                });
-        } else {
-            trs.push({tds: [tree]});
-            tree.childs.forEach(child => {
-                this.getTreeIterator(child, (child) => {
-                    if (!child.hidden) {
-                        trs.push({tds: [child]});
-                    }
-                })
-            })
-        }
-        return trs;
-    };
-    getTrsLeft() {
-        return this.getTrs(this.state.measures_left_tree)
-    };
-    getTrsTop() {
-        let trs = this.getTrs(this.state.measures_top_tree);
-
-        let convert_trs_for_top = (trs) => {
-            let result_trs = [], added_td;
-
-            for (let i = trs.length - 1; i >= 0; i--) {
-                // Костылииии. Максимум в шапке может быть 4 уровня (строк заголовков)
-                if (trs[i].tds.length === 1) {
-                    if (!result_trs[result_trs.length - 1]) result_trs.unshift({tds: []});
-
-                    result_trs[result_trs.length - 1].tds.unshift(trs[i].tds[0]);
-                }
-                else if (trs[i].tds.length === 2) {
-                    if (!result_trs[result_trs.length - 1]) result_trs.unshift({tds: []});
-                    if (!result_trs[result_trs.length - 2]) result_trs.unshift({tds: []});
-
-                    added_td = trs[i].tds[trs[i].tds.length - 1];
-                    result_trs[result_trs.length - 1].tds.unshift(added_td);
-
-                    added_td = trs[i].tds[trs[i].tds.length - 2];
-                    result_trs[result_trs.length - 2].tds.unshift({
-                        ...added_td, colSpan: added_td.rowSpan
-                    });
-                }
-                else if (trs[i].tds.length === 3) {
-                    if (!result_trs[result_trs.length - 1]) result_trs.unshift({tds: []});
-                    if (!result_trs[result_trs.length - 2]) result_trs.unshift({tds: []});
-                    if (!result_trs[result_trs.length - 3]) result_trs.unshift({tds: []});
-
-                    added_td = trs[i].tds[trs[i].tds.length - 1];
-                    result_trs[result_trs.length - 1].tds.unshift(added_td);
-
-                    added_td = trs[i].tds[trs[i].tds.length - 2];
-                    result_trs[result_trs.length - 2].tds.unshift({
-                        ...added_td, colSpan: added_td.rowSpan
-                    });
-
-                    added_td = trs[i].tds[trs[i].tds.length - 3];
-                    result_trs[result_trs.length - 3].tds.unshift({
-                        ...added_td, colSpan: added_td.rowSpan
-                    });
-                }
-                else if (trs[i].tds.length === 4) {
-                    if (!result_trs[result_trs.length - 4]) {
-                        result_trs.unshift({tds: []});
-                    }
-                    added_td = trs[i].tds[trs[i].tds.length - 1];
-                    result_trs[result_trs.length - 1].tds.unshift(added_td);
-
-                    added_td = trs[i].tds[trs[i].tds.length - 2];
-                    result_trs[result_trs.length - 2].tds.unshift({
-                        ...added_td, colSpan: added_td.rowSpan
-                    });
-
-                    added_td = trs[i].tds[trs[i].tds.length - 3];
-                    result_trs[result_trs.length - 3].tds.unshift({
-                        ...added_td, colSpan: added_td.rowSpan
-                    });
-
-                    added_td = trs[i].tds[trs[i].tds.length - 4];
-                    result_trs[result_trs.length - 4].tds.unshift({
-                        ...added_td, colSpan: added_td.rowSpan
-                    });
-                }
-            }
-
-            return result_trs;
-        };
-
-        return convert_trs_for_top(trs);
-    };
-
     handleClickToggleLeftChilds(tree) {
         let new_hidden = !tree.hidden_childs,
             new_childs = tree.childs.map(child => ({...child, hidden: new_hidden}));
 
-        let full_tree = this.tree_set_element(this.state.measures_left_tree, tree._path, {
+        let full_tree = this.state.measures_left_tree.set_element(tree._path, {
             ...tree,
             childs: new_childs,
             hidden_childs: new_hidden,
@@ -225,7 +92,7 @@ class Cube extends Component {
         let new_hidden = !tree.hidden_childs,
             new_childs = tree.childs.map(child => ({...child, hidden: new_hidden}));
 
-        let full_tree = this.tree_set_element(this.state.measures_top_tree, tree._path, {
+        let full_tree = this.state.measures_top_tree.set_element(tree._path, {
             ...tree,
             childs: new_childs,
             hidden_childs: new_hidden,
@@ -235,83 +102,12 @@ class Cube extends Component {
         })
     };
 
-    tree_iterator_with_childs(tree, callback) {
-        tree = callback(tree);
-        tree.childs = tree.childs.map((child, i) => this.tree_iterator_with_childs(child, callback));
-        return tree;
-    }
-
-    tree_get_deep_length(tree, filter = () => true) {
-        let length = 0;
-
-        this.tree_iterator_with_childs(tree, (child) => {
-            if (filter(child)) {
-                if (child._subtree) {
-                    length += this.tree_get_deep_length(child._subtree, filter);
-                } else {
-                    length++;
-                }
-            }
-            return child;
-        });
-
-        return length;
-    }
-
-    tree_set_element(tree, path, element) {
-        let eval_str = `tree${path.map(key => `['${key}']`).join('')} = element`;
-        element = copy(element);// Что бы не было варнинга
-
-        eval(eval_str);
-        return tree;
-    };
-
-    fullTree_get(measures) {
-        let result_tree = copy(measures[0]);
-
-        if (measures[1]) {
-            result_tree = this.tree_iterator_with_childs(result_tree, (tree) => {
-                return {
-                    ...tree,
-                    _subtree: this.fullTree_get(measures.slice(1, measures.length)),
-                }
-            });
-        }
-
-        return {
-            ...result_tree,
-        };
-    };
-
-    fullTree_setpaths(tree, path = []) {
-        tree.childs = tree.childs.map((child, i) => this.fullTree_setpaths(child, path.concat(['childs', i])));
-        if (tree._subtree) {
-            tree._subtree = this.fullTree_setpaths(tree._subtree, path.concat(['_subtree']))
-        }
-        return {
-            ...tree,
-            _path: path,
-        };
-    }
-
-    // Не используется но может пригодится
-    tree_get_length(tree, filter = () => true) {
-        let length = 0;
-        this.tree_iterator_with_childs(tree, (child) => {
-            if (filter(child)) {
-                length++;
-            }
-            return child;
-        });
-        return length;
-    }
-
     render() {
         let top_rows_count = this.state.measures_top.length,
             left_cols_count = this.state.measures_left.length;
 
-        let trs_top = this.getTrsTop(),
-            trs_left = this.getTrsLeft();
+        let trs_top = this.state.measures_top_tree.get_top_trs(),
+            trs_left = this.state.measures_left_tree.get_left_trs();
 
         console.groupCollapsed('fs-react-cube render()');
         console.info('this.props', this.props);
