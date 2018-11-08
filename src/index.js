@@ -10,7 +10,7 @@ import './styles/index.css'
 import $ from 'jquery';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 
-import {error, create_map, copy} from './helper';
+import {error, create_map, copy, obj_hash} from './helper';
 import SideTree from './SideTree';
 
 window.$ = $;
@@ -19,6 +19,12 @@ class Cube extends Component {
     constructor(props) {
         super(props);
 
+        this.state = {
+            props_hash: null,
+        };
+    }
+    static get_init_state(props) {
+        console.info('fs-react-cube - init', props);
         //Проверка пропсов
         if (props.measures.length <= 2) error('Measures length must be greater than 1');
 
@@ -29,34 +35,27 @@ class Cube extends Component {
             measures_left_codes = props.measures_list_left && props.measures_list_left.length > 0 ?
                 props.measures_list_left : [measures[1].tree.code];
 
-        this.init_trees = measures.map(measure => SideTree.prepare_tree(measure.tree));
-        this.init_trees_map = create_map(this.init_trees, 'code');
+        let init_trees = measures.map(measure => SideTree.prepare_tree(measure.tree));
+        let init_trees_map = create_map(init_trees, 'code');
 
-        let measures_top = measures_top_codes.map(measure_code => this.init_trees[this.init_trees_map[measure_code]]),
-            measures_left = measures_left_codes.map(measure_code => this.init_trees[this.init_trees_map[measure_code]]);
-
-        this.state = {
-            trees: this.init_trees,
-            trees_map: this.init_trees_map,
-            measures_top: measures_top,
-            measures_left: measures_left,
-        };
-
-        this.state = {
-            ...this.state,
-            ...this.get_init_trees()
-        }
-    }
-
-    get_init_trees() {
-        let measures_top_tree = new SideTree(this.state.measures_top),
-            measures_left_tree = new SideTree(this.state.measures_left);
+        let measures_top = measures_top_codes.map(measure_code => init_trees[init_trees_map[measure_code]]),
+            measures_left = measures_left_codes.map(measure_code => init_trees[init_trees_map[measure_code]]);
 
         return {
-            measures_left_tree: measures_left_tree,
-            measures_top_tree: measures_top_tree,
+            measures_top: measures_top,
+            measures_left: measures_left,
+            measures_top_tree: new SideTree(measures_top),
+            measures_left_tree: new SideTree(measures_left),
+            props_hash: obj_hash(props),
+        };
+    }
+
+    static getDerivedStateFromProps(props, state) {
+        if(obj_hash(props) !== state.props_hash) {
+            return Cube.get_init_state(props);
         }
-    };
+        return null;
+    }
 
     componentDidMount() {
         //region fixedTable jquery
@@ -84,9 +83,8 @@ class Cube extends Component {
             childs: new_childs,
             hidden_childs: new_hidden,
         });
-        this.setState({
-            measures_left_tree: full_tree,
-        })
+
+        this.setState({ measures_left_tree: full_tree })
     };
     handleClickToggleTopChilds(tree) {
         let new_hidden = !tree.hidden_childs,
@@ -97,9 +95,7 @@ class Cube extends Component {
             childs: new_childs,
             hidden_childs: new_hidden,
         });
-        this.setState({
-            measures_top_tree: full_tree,
-        })
+        this.setState({ measures_top_tree: full_tree })
     };
 
     render() {
@@ -209,6 +205,7 @@ Cube.propTypes = {
     })).isRequired,
     measures_list_top: PropTypes.arrayOf(PropTypes.string), //Codes of top measures
     measures_list_left: PropTypes.arrayOf(PropTypes.string), //Codes of left measures
+    reload: PropTypes.func,
 };
 
 export default Cube;

@@ -37,7 +37,7 @@ export default class SideTree {
     iterator(tree, callback = () => {}) {
         callback(tree);
         let result = [tree];
-        tree.childs.forEach(child => result = result.concat(this.getTreeIterator(child, callback)));
+        tree.childs.forEach(child => result = result.concat(this.iterator(child, callback)));
         return result;
     }
     iterator_with_childs(tree, callback) {

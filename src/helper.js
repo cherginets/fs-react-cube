@@ -21,3 +21,11 @@ export const get_range = (end, start = 1) => {
     }
     return result;
 };
+
+export const obj_hash = (obj) => {
+    return JSON.stringify(obj);
+};
+
+
+
+
