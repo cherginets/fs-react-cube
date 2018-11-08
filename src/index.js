@@ -11,6 +11,7 @@ import $ from 'jquery';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 
 import {error, create_map, copy} from './helper';
+import SideTree from './SideTree';
 
 window.$ = $;
 
@@ -21,20 +22,24 @@ class Cube extends Component {
         //Проверка пропсов
         if (props.measures.length <= 2) error('Measures length must be greater than 1');
 
-        let measures = props.measures,
-            init_list_measures_top = props.measures_list_top && props.measures_list_top.length > 0 ?
-                props.measures_list_top : [measures[0].tree.code],
-            init_list_measures_left = props.measures_list_left && props.measures_list_left.length > 0 ?
+        let measures = props.measures;
+
+        const measures_top_codes = props.measures_list_top && props.measures_list_top.length > 0 ?
+            props.measures_list_top : [measures[0].tree.code],
+            measures_left_codes = props.measures_list_left && props.measures_list_left.length > 0 ?
                 props.measures_list_left : [measures[1].tree.code];
 
         this.init_trees = measures.map(measure => this.prepareTree(measure.tree));
         this.init_trees_map = create_map(this.init_trees, 'code');
 
+        let measures_top = measures_top_codes.map(measure_code => this.init_trees[this.init_trees_map[measure_code]]),
+            measures_left = measures_left_codes.map(measure_code => this.init_trees[this.init_trees_map[measure_code]]);
+
         this.state = {
             trees: this.init_trees,
             trees_map: this.init_trees_map,
-            list_measures_top: init_list_measures_top,
-            list_measures_left: init_list_measures_left,
+            measures_top: measures_top,
+            measures_left: measures_left,
         };
 
         this.state = {
@@ -44,20 +49,14 @@ class Cube extends Component {
     }
 
     get_init_trees() {
-        let measures_top = this.state.list_measures_top.map(measure_code => copy(this.init_trees[this.init_trees_map[measure_code]])),
-            measures_top_tree = this.fullTree_get(this.state.list_measures_top),
-
-            measures_left = this.state.list_measures_left.map(measure_code => copy(this.init_trees[this.init_trees_map[measure_code]])),
-            measures_left_tree = this.fullTree_get(this.state.list_measures_left);
+        let measures_top_tree = this.fullTree_get(this.state.measures_top),
+            measures_left_tree = this.fullTree_get(this.state.measures_left);
 
         measures_top_tree = this.fullTree_setpaths(measures_top_tree);
         measures_left_tree = this.fullTree_setpaths(measures_left_tree);
 
         return {
-            measures_left: measures_left,
             measures_left_tree: measures_left_tree,
-
-            measures_top: measures_top,
             measures_top_tree: measures_top_tree,
         }
     };
@@ -133,11 +132,9 @@ class Cube extends Component {
         }
         return trs;
     };
-
     getTrsLeft() {
         return this.getTrs(this.state.measures_left_tree)
     };
-
     getTrsTop() {
         let trs = this.getTrs(this.state.measures_top_tree);
 
@@ -211,7 +208,6 @@ class Cube extends Component {
         return convert_trs_for_top(trs);
     };
 
-
     handleClickToggleLeftChilds(tree) {
         let new_hidden = !tree.hidden_childs,
             new_childs = tree.childs.map(child => ({...child, hidden: new_hidden}));
@@ -225,7 +221,6 @@ class Cube extends Component {
             measures_left_tree: full_tree,
         })
     };
-
     handleClickToggleTopChilds(tree) {
         let new_hidden = !tree.hidden_childs,
             new_childs = tree.childs.map(child => ({...child, hidden: new_hidden}));
@@ -272,7 +267,7 @@ class Cube extends Component {
     };
 
     fullTree_get(measures) {
-        let result_tree = copy(this.init_trees[this.init_trees_map[measures[0]]]);
+        let result_tree = copy(measures[0]);
 
         if (measures[1]) {
             result_tree = this.tree_iterator_with_childs(result_tree, (tree) => {
@@ -312,8 +307,8 @@ class Cube extends Component {
     }
 
     render() {
-        let top_rows_count = this.state.list_measures_top.length,
-            left_cols_count = this.state.list_measures_left.length;
+        let top_rows_count = this.state.measures_top.length,
+            left_cols_count = this.state.measures_left.length;
 
         let trs_top = this.getTrsTop(),
             trs_left = this.getTrsLeft();
