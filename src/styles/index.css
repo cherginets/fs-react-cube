@@ -8,16 +8,13 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace; }
 
-.cube {
-  width: 734px; }
-  .cube-no-border {
-    border: none !important; }
+.cube-no-border {
+  border: none !important; }
 
 .cube-table {
   background: white;
   border: 1px solid #e4e4e4;
-  border-radius: 10px;
-  width: 734px; }
+  border-radius: 10px; }
   .cube-table * {
     box-sizing: content-box; }
   .cube-table table {
@@ -35,7 +32,6 @@ code {
       background: #f3f3f3;
       color: black; }
   .cube-table-top {
-    width: 510px;
     overflow: hidden; }
     .cube-table-top tr:first-child th {
       border-top: none; }
@@ -59,7 +55,6 @@ code {
       border-bottom: 1px solid #e4e4e4; }
   .cube-table-body {
     overflow: auto;
-    width: 510px;
     height: 310px;
     float: left;
     border-top: 1px solid #e4e4e4; }

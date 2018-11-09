@@ -115,12 +115,20 @@ class Cube extends Component {
         console.info('measures_left_tree', this.state.measures_left_tree);
         console.groupEnd();
 
+        let styling = {};
+        styling.width = this.props.width;
+        styling.left_width = 110 * left_cols_count + 1;
+        styling.top_height = 30 * top_rows_count + 1;
+        styling.body_width = styling.width - styling.left_width - 1;
+        styling.body_height = 310;
+
         return (
             <div className="cube">
-                <div className="cube-table" id="cubeTable">
+                <div className="cube-table" id="cubeTable" style={{width: this.props.width}}>
                     <header className="cube-table-top" style={{
-                        marginLeft: (110 * left_cols_count + 1) + "px",
-                        height: (30 * top_rows_count + 1) + "px",
+                        marginLeft: `${styling.left_width}px`,
+                        height: `${styling.top_height}px`,
+                        width: `${styling.body_width}px`,
                     }}>
                         <table cellSpacing={0}>
                             <thead>
@@ -171,7 +179,10 @@ class Cube extends Component {
                             </tbody>
                         </table>
                     </aside>
-                    <div className="cube-table-body">
+                    <div className="cube-table-body" style={{
+                        width: `${styling.body_width}px`,
+                        height: `${styling.body_height}px`,
+                    }}>
                         <table cellSpacing={0}>
                             <tbody>
                             {trs_left.map((left, i) => {
@@ -193,7 +204,9 @@ class Cube extends Component {
     }
 }
 
-Cube.defaultProps = {};
+Cube.defaultProps = {
+    width: 700,
+};
 
 Cube.propTypes = {
     measures: PropTypes.arrayOf(PropTypes.shape({
@@ -207,7 +220,7 @@ Cube.propTypes = {
     })).isRequired,
     measures_list_top: PropTypes.arrayOf(PropTypes.string), //Codes of top measures
     measures_list_left: PropTypes.arrayOf(PropTypes.string), //Codes of left measures
-    reload: PropTypes.func,
+    width: PropTypes.number,
 };
 
 export default Cube;
