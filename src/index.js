@@ -24,18 +24,16 @@ class Cube extends Component {
         };
     }
     static refix_table() {
-        let fixedTable;
-        fixedTable = function (el) {
-            let $body, $topside, $leftside;
-            $body = $(el).find('.cube-table-body');
-            $leftside = $(el).find('.cube-table-left table');
-            $topside = $(el).find('.cube-table-top table');
-            return $($body).scroll(function () {
-                $($leftside).css('margin-top', -$($body).scrollTop());
-                return $($topside).css('margin-left', -$($body).scrollLeft());
-            });
-        };
-        new fixedTable($('#cubeTable'));
+        let $table = $('#cubeTable'),
+            $body = $table.find('.cube-table-body'),
+            $top = $table.find('.cube-table-top table'),
+            $left = $table.find('.cube-table-left table');
+
+        $body.unbind('scroll');
+        $body.scroll(() => {
+            $left.css('margin-top', -$body.scrollTop());
+            return $top.css('margin-left', -$body.scrollLeft());
+        });
     }
     static get_init_state(props) {
         console.info('fs-react-cube - init', props);
@@ -55,7 +53,6 @@ class Cube extends Component {
         let measures_top = measures_top_codes.map(measure_code => init_trees[init_trees_map[measure_code]]),
             measures_left = measures_left_codes.map(measure_code => init_trees[init_trees_map[measure_code]]);
 
-        Cube.refix_table();
         return {
             measures_top: measures_top,
             measures_left: measures_left,
@@ -67,13 +64,14 @@ class Cube extends Component {
 
     static getDerivedStateFromProps(props, state) {
         if(obj_hash(props) !== state.props_hash) {
+            props.onOpenCells([1,2,3]);
             return Cube.get_init_state(props);
         }
         return null;
     }
 
-    componentDidMount() {
-
+    componentDidUpdate() {
+        Cube.refix_table();
     }
 
     handleClickToggleLeftChilds(tree) {
@@ -186,10 +184,13 @@ class Cube extends Component {
                         <table cellSpacing={0}>
                             <tbody>
                             {trs_left.map((left, i) => {
+                                let left_path = left.tds[left.tds.length - 1]._path_cell,
+                                    top_path = top._path_cell;
+
                                 return <tr key={i}>
-                                    {trs_top[trs_top.length - 1].tds.map((head, j) => {
+                                    {trs_top[trs_top.length - 1].tds.map((top, j) => {
                                         return <td key={j}>
-                                            cell{i}-{j}
+                                            {this.props.getCellValue(left_path, top_path)}
                                         </td>
                                     })}
                                 </tr>
@@ -221,6 +222,7 @@ Cube.propTypes = {
     measures_list_top: PropTypes.arrayOf(PropTypes.string), //Codes of top measures
     measures_list_left: PropTypes.arrayOf(PropTypes.string), //Codes of left measures
     width: PropTypes.number,
+    onOpenCells: PropTypes.func,
 };
 
 export default Cube;

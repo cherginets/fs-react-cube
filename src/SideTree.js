@@ -23,14 +23,15 @@ export default class SideTree {
         };
     }
 
-    set_paths(tree, path = []) {
-        tree.childs = tree.childs.map((child, i) => this.set_paths(child, path.concat(['childs', i])));
+    set_paths(tree, path = [], path_cell = []) {
+        tree.childs = tree.childs.map((child, i) => this.set_paths(child, path.concat(['childs', i]), path_cell.concat([tree.code])));
         if (tree._subtree) {
-            tree._subtree = this.set_paths(tree._subtree, path.concat(['_subtree']))
+            tree._subtree = this.set_paths(tree._subtree, path.concat(['_subtree']), path_cell.concat([tree.code]));
         }
         return {
             ...tree,
             _path: path,
+            _path_cell: path_cell.concat(tree.code),
         };
     }
 
