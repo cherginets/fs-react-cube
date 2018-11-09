@@ -23,6 +23,20 @@ class Cube extends Component {
             props_hash: null,
         };
     }
+    static refix_table() {
+        let fixedTable;
+        fixedTable = function (el) {
+            let $body, $topside, $leftside;
+            $body = $(el).find('.cube-table-body');
+            $leftside = $(el).find('.cube-table-left table');
+            $topside = $(el).find('.cube-table-top table');
+            return $($body).scroll(function () {
+                $($leftside).css('margin-top', -$($body).scrollTop());
+                return $($topside).css('margin-left', -$($body).scrollLeft());
+            });
+        };
+        new fixedTable($('#cubeTable'));
+    }
     static get_init_state(props) {
         console.info('fs-react-cube - init', props);
         //Проверка пропсов
@@ -41,6 +55,7 @@ class Cube extends Component {
         let measures_top = measures_top_codes.map(measure_code => init_trees[init_trees_map[measure_code]]),
             measures_left = measures_left_codes.map(measure_code => init_trees[init_trees_map[measure_code]]);
 
+        Cube.refix_table();
         return {
             measures_top: measures_top,
             measures_left: measures_left,
@@ -58,20 +73,7 @@ class Cube extends Component {
     }
 
     componentDidMount() {
-        //region fixedTable jquery
-        let fixedTable;
-        fixedTable = function (el) {
-            let $body, $topside, $leftside;
-            $body = $(el).find('.cube-table-body');
-            $leftside = $(el).find('.cube-table-left table');
-            $topside = $(el).find('.cube-table-top table');
-            return $($body).scroll(function () {
-                $($leftside).css('margin-top', -$($body).scrollTop());
-                return $($topside).css('margin-left', -$($body).scrollLeft());
-            });
-        };
-        new fixedTable($('#cubeTable'));
-        //endregion
+
     }
 
     handleClickToggleLeftChilds(tree) {
