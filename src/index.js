@@ -218,7 +218,7 @@ class Cube extends Component {
 
 Cube.defaultProps = {
     width: 700,
-    debug: true,
+    debug: false,
     onChange: () => { console.info('fs-react-cube - onChange'); },
     onOpen: () => { console.info('fs-react-cube - onOpen'); },
     onClose: () => { console.info('fs-react-cube - onClose'); },
