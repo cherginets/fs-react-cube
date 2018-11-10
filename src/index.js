@@ -2,9 +2,9 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
 import {library} from '@fortawesome/fontawesome-svg-core'
-import {faCaretUp, faCaretDown, faCaretLeft, faCaretRight} from '@fortawesome/free-solid-svg-icons'
+import {faCaretDown, faCaretRight} from '@fortawesome/free-solid-svg-icons'
 
-library.add(faCaretUp, faCaretDown, faCaretLeft, faCaretRight);
+library.add(faCaretDown, faCaretRight);
 
 import './styles/index.css'
 import $ from 'jquery';
@@ -40,7 +40,8 @@ class Cube extends Component {
         //Проверка пропсов
         if (props.measures.length <= 2) error('Measures length must be greater than 1');
 
-        let measures = props.measures;
+        let measures = props.measures,
+            measures_map = create_map(measures, 'code');
 
         const measures_top_codes = props.measures_list_top && props.measures_list_top.length > 0 ?
             props.measures_list_top : [measures[0].code],
@@ -56,11 +57,14 @@ class Cube extends Component {
         console.log('init_trees', init_trees);
         console.log('init_trees_map', init_trees_map);
         let measures_top = measures_top_codes.map(measure_code => init_trees[init_trees_map[measure_code]]),
-            measures_left = measures_left_codes.map(measure_code => init_trees[init_trees_map[measure_code]]);
+            measures_top_names = measures_top_codes.map(code => measures[measures_map[code]].name),
+            measures_left = measures_left_codes.map(measure_code => init_trees[init_trees_map[measure_code]]),
+            measures_left_names = measures_left_codes.map(code => measures[measures_map[code]].name);
 
         return {
             measures_top: measures_top,
             measures_left: measures_left,
+            measures_left_names: measures_left_names,
             measures_top_tree: new SideTree(measures_top),
             measures_left_tree: new SideTree(measures_left),
             props_hash: obj_hash(props),
@@ -155,17 +159,19 @@ class Cube extends Component {
         console.groupEnd();
 
         let styling = {};
+
         styling.width = this.props.width;
-        styling.left_width = 110 * left_cols_count + 1;
-        styling.top_height = 30 * top_rows_count + 1;
-        styling.body_width = styling.width - styling.left_width - 1;
+        styling.gap_width = 5;
+        styling.left_width = 110 * left_cols_count;
+        styling.top_height = 30 * top_rows_count;
+        styling.body_width = styling.width - styling.gap_width - styling.left_width - 1;
         styling.body_height = 310;
 
         return (
             <div className="frc">
                 <div className="frc-table" id="frcTable" style={{width: this.props.width}}>
                     <header className="frc-table-top" style={{
-                        marginLeft: `${styling.left_width}px`,
+                        marginLeft: `${styling.left_width + styling.gap_width}px`,
                         height: `${styling.top_height}px`,
                         width: `${styling.body_width}px`,
                     }}>
@@ -177,10 +183,10 @@ class Cube extends Component {
                                         return <th colSpan={td.colSpan} key={j}
                                                    onClick={this.handleClickToggleTopChilds.bind(this, td)}>
                                             {td.name}
-                                            <span style={{marginLeft: "7px"}}>
+                                            <span className="frc-caret">
                                         {td.has_childs ? (!td.hidden_childs ?
-                                            <FontAwesomeIcon icon={"caret-right"}/> :
-                                            <FontAwesomeIcon icon={"caret-left"}/>) :
+                                            <FontAwesomeIcon icon={"caret-down"}/> :
+                                            <FontAwesomeIcon icon={"caret-right"}/>) :
                                             false}
                                         </span>
                                         </th>
@@ -190,7 +196,17 @@ class Cube extends Component {
                             </thead>
                         </table>
                     </header>
-                    <aside className="frc-table-left" style={{width: (110 * left_cols_count + 1) + 'px'}}>
+                    <aside className="frc-table-left" style={{width: `${styling.left_width}px`}}>
+                        <div className="frc-table-left-heads" style={{
+                            width: `${styling.left_width}px`,
+                            height: `${styling.top_height + 1}px`,
+                        }}>
+                            {this.state.measures_left_names.map((name, i) => {
+                                return <div key={i} className="frc-table-left-heads__head" style={{width: `${100 / this.state.measures_left_names.length}%`}}>
+                                    {name}
+                                </div>;
+                            })}
+                        </div>
                         <table cellSpacing={0}>
                             <tbody>
                             {trs_left.map((tr, i) => {
@@ -199,10 +215,10 @@ class Cube extends Component {
                                         return <th rowSpan={td.rowSpan} key={j}
                                                    onClick={this.handleClickToggleLeftChilds.bind(this, td)}>
                                             {td.name}
-                                            <span style={{marginLeft: "7px"}}>
+                                            <span className={"frc-caret"}>
                                         {td.has_childs ? (!td.hidden_childs ?
                                             <FontAwesomeIcon icon={"caret-down"}/> :
-                                            <FontAwesomeIcon icon={"caret-up"}/>) :
+                                            <FontAwesomeIcon icon={"caret-right"}/>) :
                                             false}
                                         </span>
                                         </th>

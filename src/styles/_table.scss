@@ -2,35 +2,33 @@
 //$top-rows-count: 1;
 
 .frc-table {
-  background: white;
-  border: $border;
-  border-radius: 10px;
+  //border: $border;
+  position: relative;
 
   * {
     box-sizing: content-box;
   }
 
   table {
-    background-color: white;
     width: auto;
     tr {
       th, td {
-        max-width: 100px;
-        min-width: 100px;
-        width: 100px;
+        max-width: 90px;
+        min-width: 90px;
+        width: 90px;
         min-height: 20px;
         height: 20px;
-        padding: 5px;
-        font-size: 12px;
-        text-align: center;
+        padding: 5px 10px;
+        text-align: left;
       }
     }
     th {
-      background: #f3f3f3;
+      background: $th-background-color;
       color: black;
     }
   }
   &-top {
+    background-color: white;
     //width: 510px;
     //height: 30px * $top-rows-count + 2;
     //margin-left: 110px * $left-cols-count + 2;
@@ -42,33 +40,73 @@
       border-bottom: none;
     }
     tr th:first-child {
-      border-left: $border;
+      border-left: none;
     }
     th {
       border-bottom: $border;
       border-right: $border;
+      font-weight: 500;
+      &[colspan]:not([colspan="1"]) {
+        text-align: center !important;
+        .frc-caret {
+          float: initial;
+          margin-left: 10px;
+        }
+      }
     }
   }
   &-left {
+    overflow: visible;
+    background-color: white;
     //width: 110px * $left-cols-count + 3px;
     height: 310px;
     float: left;
+    margin-right: 5px;
     overflow: hidden;
 
     border-top: $border;
-    border-right: 1px solid $border-color;
+
     tr:first-child th {
       border-top: none;
     }
     tr th:first-child {
       //border-left: $th-border;
     }
-    th {
+    tr th:last-child {border-right: none;
+    }
+    table th {
+      background: white;
       border-right: $border;
       border-bottom: $border;
+      text-align: left;
+      font-weight: normal;
+    }
+    &-heads {
+      position: absolute;
+      top: 0;
+      left: 0;
+      border-bottom: 1px solid #cac6c6;
+      background: #f4f5f5;
+      height: 31px;
+      width: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      box-sizing: border-box;
+      font-weight: 500;
+      &__head {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        padding-left: 10px;
+        &:not(:first-child) {
+          border-left: 1px solid #cac6c6;
+        }
+      }
     }
   }
   &-body {
+    background-color: white;
     overflow: auto;
     //width: 510px;
     height: 310px;
@@ -83,6 +121,15 @@
     td {
       border-bottom: $border;
       border-right: $border;
+      text-align: left;
     }
+  }
+  .frc-caret {
+    float: right;
+  }
+  [data-icon="caret-right"],
+  [data-icon="caret-down"] {
+    color: $carets-color;
+    font-size: 14px;
   }
 }
