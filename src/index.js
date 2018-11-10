@@ -43,13 +43,18 @@ class Cube extends Component {
         let measures = props.measures;
 
         const measures_top_codes = props.measures_list_top && props.measures_list_top.length > 0 ?
-            props.measures_list_top : [measures[0].tree.code],
+            props.measures_list_top : [measures[0].code],
             measures_left_codes = props.measures_list_left && props.measures_list_left.length > 0 ?
-                props.measures_list_left : [measures[1].tree.code];
+                props.measures_list_left : [measures[1].code];
 
-        let init_trees = measures.map(measure => SideTree.prepare_tree(measure.tree));
-        let init_trees_map = create_map(init_trees, 'code');
+        let init_trees_map = {},
+            init_trees = measures.map((measure, i) => {
+                init_trees_map[measure.code] = i;
+                return SideTree.prepare_tree(measure.tree)
+            });
 
+        console.log('init_trees', init_trees);
+        console.log('init_trees_map', init_trees_map);
         let measures_top = measures_top_codes.map(measure_code => init_trees[init_trees_map[measure_code]]),
             measures_left = measures_left_codes.map(measure_code => init_trees[init_trees_map[measure_code]]);
 
@@ -70,9 +75,8 @@ class Cube extends Component {
         return null;
     }
 
-    componentDidUpdate() {
-        Cube.refix_table();
-    }
+    componentDidMount() { Cube.refix_table(); }
+    componentDidUpdate() { Cube.refix_table(); }
 
     handleClickToggleLeftChilds(tree) {
         let new_hidden = !tree.hidden_childs,
@@ -184,13 +188,12 @@ class Cube extends Component {
                         <table cellSpacing={0}>
                             <tbody>
                             {trs_left.map((left, i) => {
-                                let left_path = left.tds[left.tds.length - 1]._path_cell,
-                                    top_path = top._path_cell;
-
                                 return <tr key={i}>
                                     {trs_top[trs_top.length - 1].tds.map((top, j) => {
+                                        let left_path = left.tds[left.tds.length - 1]._path_cell,
+                                            top_path = top._path_cell;
                                         return <td key={j}>
-                                            {this.props.getCellValue(left_path, top_path)}
+                                            {this.props.getCell(left_path, top_path)}
                                         </td>
                                     })}
                                 </tr>
@@ -207,6 +210,7 @@ class Cube extends Component {
 
 Cube.defaultProps = {
     width: 700,
+    debug: true,
 };
 
 Cube.propTypes = {
@@ -222,7 +226,8 @@ Cube.propTypes = {
     measures_list_top: PropTypes.arrayOf(PropTypes.string), //Codes of top measures
     measures_list_left: PropTypes.arrayOf(PropTypes.string), //Codes of left measures
     width: PropTypes.number,
-    onOpenCells: PropTypes.func,
+    getCell: PropTypes.func,
+    debug: PropTypes.bool,
 };
 
 export default Cube;

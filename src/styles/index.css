@@ -21,6 +21,7 @@ code {
     background-color: white;
     width: auto; }
     .cube-table table tr th, .cube-table table tr td {
+      max-width: 100px;
       min-width: 100px;
       width: 100px;
       min-height: 20px;

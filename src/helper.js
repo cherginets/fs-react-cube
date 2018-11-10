@@ -11,7 +11,8 @@ export const create_map = (array, key) => {
 };
 
 export const copy = (obj) => {
-    return JSON.parse(JSON.stringify(obj));
+    const json = JSON.stringify(obj);
+    return JSON.parse(json);
 };
 
 export const get_range = (end, start = 1) => {

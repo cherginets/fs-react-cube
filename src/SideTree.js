@@ -8,6 +8,11 @@ export default class SideTree {
 
     init_tree(measures) {
         let result_tree = copy(measures[0]);
+        let hidden_childs = true;
+        if(typeof result_tree.hidden_childs !== 'undefined' && result_tree.hidden_childs === false) {
+            hidden_childs = false;
+        }
+        result_tree.childs = result_tree.childs.map(child => ({...child, hidden: hidden_childs}));
 
         if (measures[1]) {
             result_tree = this.iterator_with_childs(result_tree, (tree) => {
@@ -176,10 +181,10 @@ export default class SideTree {
         return this;
     };
 
-    static prepare_tree(tree, lvl = 0, path = []) {
+    static prepare_tree(tree, lvl = 0, path = [], root_code = tree.code) {
         tree._measure_path = path;
         if (tree.childs && tree.childs.length > 0) {
-            tree.childs = tree.childs.map((child, i) => SideTree.prepare_tree(child, lvl + 1, path.concat(['childs', i])))
+            tree.childs = tree.childs.map((child, i) => SideTree.prepare_tree(child, lvl + 1, path.concat(['childs', i]), root_code))
         } else {
             tree.childs = [];
         }
@@ -187,8 +192,10 @@ export default class SideTree {
         tree.hidden_childs = typeof tree.hidden_childs !== 'undefined' ? tree.hidden_childs : true;
 
         tree.lvl = lvl;
-        tree.code = tree.code ? tree.code : tree.name;
+        tree.code = tree.code ? tree.code : tree.name.toLowerCase().replace(' ', '_').replace("\t", '_');
         tree.has_childs = tree.childs.length > 0;
+
+        tree._root_code = root_code;
 
         return tree;
     };
