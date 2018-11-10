@@ -24,10 +24,10 @@ class Cube extends Component {
         };
     }
     static refix_table() {
-        let $table = $('#cubeTable'),
-            $body = $table.find('.cube-table-body'),
-            $top = $table.find('.cube-table-top table'),
-            $left = $table.find('.cube-table-left table');
+        let $table = $('#frcTable'),
+            $body = $table.find('.frc-table-body'),
+            $top = $table.find('.frc-table-top table'),
+            $left = $table.find('.frc-table-left table');
 
         $body.unbind('scroll');
         $body.scroll(() => {
@@ -162,9 +162,9 @@ class Cube extends Component {
         styling.body_height = 310;
 
         return (
-            <div className="cube">
-                <div className="cube-table" id="cubeTable" style={{width: this.props.width}}>
-                    <header className="cube-table-top" style={{
+            <div className="frc">
+                <div className="frc-table" id="frcTable" style={{width: this.props.width}}>
+                    <header className="frc-table-top" style={{
                         marginLeft: `${styling.left_width}px`,
                         height: `${styling.top_height}px`,
                         width: `${styling.body_width}px`,
@@ -190,7 +190,7 @@ class Cube extends Component {
                             </thead>
                         </table>
                     </header>
-                    <aside className="cube-table-left" style={{width: (110 * left_cols_count + 1) + 'px'}}>
+                    <aside className="frc-table-left" style={{width: (110 * left_cols_count + 1) + 'px'}}>
                         <table cellSpacing={0}>
                             <tbody>
                             {trs_left.map((tr, i) => {
@@ -210,15 +210,15 @@ class Cube extends Component {
                                 </tr>;
                             })}
                             <tr>
-                                <td className="cube-no-border"></td>
+                                <td className="frc-no-border"></td>
                             </tr>
                             <tr>
-                                <td className="cube-no-border"></td>
+                                <td className="frc-no-border"></td>
                             </tr>
                             </tbody>
                         </table>
                     </aside>
-                    <div className="cube-table-body" style={{
+                    <div className="frc-table-body" style={{
                         width: `${styling.body_width}px`,
                         height: `${styling.body_height}px`,
                     }}>
