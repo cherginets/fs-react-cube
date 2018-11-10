@@ -2,8 +2,22 @@
 React компонент реализующий Cube (таблицу с раскрывающимися заголовками, ячейки которой несут в себе агрегированные значения из БД)
 
 ## How install
-```
+```bash
 npm install fs-react-cube --save
+```
+```jsx harmony
+<Cube
+    measures={this.state.measures}
+    measures_list_top={this.state.measures_list_top}
+    measures_list_left={this.state.measures_list_left}
+    getCell={(path_left, path_top) => {
+        // Your logic
+        return path_left.concat(path_top).join('').split('').map(function (char) {
+            return char.charCodeAt(0) * 2;
+        }).reduce((acc, cur) => acc + cur); //example val.
+    }}
+    debug={true}
+/>
 ```
 
 ## PropTypes
