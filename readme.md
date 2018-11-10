@@ -176,14 +176,3 @@ Function.\
 Bool. По умолчанию - false.\
 \
 Выводить ли служебные логи в консоль.
-
-
-
-    width: PropTypes.number,
-
-    getCell: PropTypes.func.isRequired,
-    onChange: PropTypes.func,
-    onOpen: PropTypes.func,
-    onClose: PropTypes.func,
-
-    debug: PropTypes.bool,
