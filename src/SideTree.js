@@ -15,7 +15,7 @@ export default class SideTree {
         result_tree.childs = result_tree.childs.map(child => ({...child, hidden: hidden_childs}));
 
         if (measures[1]) {
-            result_tree = this.iterator_with_childs(result_tree, (tree) => {
+            result_tree = SideTree.iterator_with_childs(result_tree, (tree) => {
                 return {
                     ...tree,
                     _subtree: this.init_tree(measures.slice(1, measures.length)),
@@ -26,6 +26,12 @@ export default class SideTree {
         return {
             ...result_tree,
         };
+    }
+
+    static iterator_with_childs(tree, callback) {
+        tree = callback(tree);
+        tree.childs = tree.childs.map((child, i) => SideTree.iterator_with_childs(child, callback));
+        return tree;
     }
 
     set_paths(tree, path = [], path_cell = []) {
@@ -46,15 +52,11 @@ export default class SideTree {
         tree.childs.forEach(child => result = result.concat(this.iterator(child, callback)));
         return result;
     }
-    iterator_with_childs(tree, callback) {
-        tree = callback(tree);
-        tree.childs = tree.childs.map((child, i) => this.iterator_with_childs(child, callback));
-        return tree;
-    }
+
     tree_get_deep_length(tree, filter = () => true) {
         let length = 0;
 
-        this.iterator_with_childs(tree, (child) => {
+        SideTree.iterator_with_childs(tree, (child) => {
             if (filter(child)) {
                 if (child._subtree) {
                     length += this.tree_get_deep_length(child._subtree, filter);

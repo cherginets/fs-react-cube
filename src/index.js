@@ -77,9 +77,54 @@ class Cube extends Component {
     componentDidMount() { Cube.refix_table(); }
     componentDidUpdate() { Cube.refix_table(); }
 
+    handleClickToggleTopChilds(tree) {
+        let new_hidden = !tree.hidden_childs,
+            new_childs = tree.childs.map(child => {
+                //Если закрываем дерево - нужно скрыть так же детей детей, и детей их детей... :)
+                if (new_hidden) {
+                    child = SideTree.iterator_with_childs(child, child_tree => {
+                        if (child_tree.code !== tree.code) {
+                            child_tree.hidden = new_hidden;
+                            child_tree.hidden_childs = new_hidden;
+                        }
+                        return child_tree;
+                    });
+                }
+                return {
+                    ...child,
+                    hidden: new_hidden,
+                }
+            });
+
+        let full_tree = this.state.measures_top_tree.set_element(tree._path, {
+            ...tree,
+            childs: new_childs,
+            hidden_childs: new_hidden,
+        });
+        this.setState({measures_top_tree: full_tree}, () => {
+            if (!new_hidden) this.props.onOpen();
+            else this.props.onClose();
+            this.props.onChange();
+        })
+    }
     handleClickToggleLeftChilds(tree) {
         let new_hidden = !tree.hidden_childs,
-            new_childs = tree.childs.map(child => ({...child, hidden: new_hidden}));
+            new_childs = tree.childs.map(child => {
+                //Если закрываем дерево - нужно скрыть так же детей детей, и детей их детей... :)
+                if (new_hidden) {
+                    child = SideTree.iterator_with_childs(child, child_tree => {
+                        if (child_tree.code !== tree.code) {
+                            child_tree.hidden = new_hidden;
+                            child_tree.hidden_childs = new_hidden;
+                        }
+                        return child_tree;
+                    });
+                }
+                return {
+                    ...child,
+                    hidden: new_hidden,
+                }
+            });
 
         let full_tree = this.state.measures_left_tree.set_element(tree._path, {
             ...tree,
@@ -92,22 +137,7 @@ class Cube extends Component {
             else this.props.onClose();
             this.props.onChange();
         })
-    };
-    handleClickToggleTopChilds(tree) {
-        let new_hidden = !tree.hidden_childs,
-            new_childs = tree.childs.map(child => ({...child, hidden: new_hidden}));
-
-        let full_tree = this.state.measures_top_tree.set_element(tree._path, {
-            ...tree,
-            childs: new_childs,
-            hidden_childs: new_hidden,
-        });
-        this.setState({measures_top_tree: full_tree}, () => {
-            if (!new_hidden) this.props.onOpen();
-            else this.props.onClose();
-            this.props.onChange();
-        })
-    };
+    }
 
     render() {
         let top_rows_count = this.state.measures_top.length,
