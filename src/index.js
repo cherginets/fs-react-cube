@@ -69,7 +69,6 @@ class Cube extends Component {
 
     static getDerivedStateFromProps(props, state) {
         if(obj_hash(props) !== state.props_hash) {
-            props.onOpenCells([1,2,3]);
             return Cube.get_init_state(props);
         }
         return null;
