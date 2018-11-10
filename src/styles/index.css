@@ -96,4 +96,30 @@
     color: #0a60c9;
     font-size: 14px; }
 
+.frc-table-body::-webkit-scrollbar {
+  width: 7px;
+  border: 1px solid white; }
+.frc-table-body::-webkit-scrollbar-thumb {
+  background: #adcbef;
+  border-radius: 4px;
+  margin: 0px 2px;
+  border: 1px solid #f2f2f2; }
+.frc-table-body::-webkit-scrollbar-thumb:hover {
+  background: #a2c1e6; }
+.frc-table-body::-webkit-scrollbar-track {
+  background: #f2f2f2;
+  border-radius: 4px; }
+.frc-table-body::-webkit-scrollbar {
+  height: 7px; }
+.frc-table-body::-webkit-scrollbar-thumb {
+  background: #adcbef;
+  border-radius: 4px;
+  margin: 0px 2px;
+  border: 1px solid white; }
+.frc-table-body::-webkit-scrollbar-thumb:hover {
+  background: #a2c1e6; }
+.frc-table-body::-webkit-scrollbar-track {
+  background: #f2f2f2;
+  border-radius: 4px; }
+
 /*# sourceMappingURL=index.css.map */
