@@ -88,7 +88,11 @@ class Cube extends Component {
             hidden_childs: new_hidden,
         });
 
-        this.setState({ measures_left_tree: full_tree })
+        this.setState({measures_left_tree: full_tree}, () => {
+            if (!new_hidden) this.props.onOpen();
+            else this.props.onClose();
+            this.props.onChange();
+        })
     };
     handleClickToggleTopChilds(tree) {
         let new_hidden = !tree.hidden_childs,
@@ -99,7 +103,11 @@ class Cube extends Component {
             childs: new_childs,
             hidden_childs: new_hidden,
         });
-        this.setState({ measures_top_tree: full_tree })
+        this.setState({measures_top_tree: full_tree}, () => {
+            if (!new_hidden) this.props.onOpen();
+            else this.props.onClose();
+            this.props.onChange();
+        })
     };
 
     render() {
@@ -211,6 +219,9 @@ class Cube extends Component {
 Cube.defaultProps = {
     width: 700,
     debug: true,
+    onChange: () => { console.info('fs-react-cube - onChange'); },
+    onOpen: () => { console.info('fs-react-cube - onOpen'); },
+    onClose: () => { console.info('fs-react-cube - onClose'); },
 };
 
 Cube.propTypes = {
@@ -226,7 +237,12 @@ Cube.propTypes = {
     measures_list_top: PropTypes.arrayOf(PropTypes.string), //Codes of top measures
     measures_list_left: PropTypes.arrayOf(PropTypes.string), //Codes of left measures
     width: PropTypes.number,
-    getCell: PropTypes.func,
+
+    getCell: PropTypes.func.isRequired,
+    onChange: PropTypes.func,
+    onOpen: PropTypes.func,
+    onClose: PropTypes.func,
+
     debug: PropTypes.bool,
 };
 
