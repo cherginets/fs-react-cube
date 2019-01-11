@@ -111,7 +111,7 @@ class Cube extends Component {
         this.setState({columns_top_tree: full_tree}, () => {
             if (!new_hidden) this.props.onOpen();
             else this.props.onClose();
-            this.props.onChange();
+            this.props.onChange(this.state.columns_left_tree, this.state.columns_top_tree);
         })
     }
     handleClickToggleLeftChilds(tree) {
@@ -142,7 +142,7 @@ class Cube extends Component {
         this.setState({columns_left_tree: full_tree}, () => {
             if (!new_hidden) this.props.onOpen();
             else this.props.onClose();
-            this.props.onChange();
+            this.props.onChange(this.state.columns_left_tree, this.state.columns_top_tree);
         })
     }
 
