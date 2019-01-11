@@ -194,7 +194,7 @@ export default class SideTree {
         tree.hidden_childs = typeof tree.hidden_childs !== 'undefined' ? tree.hidden_childs : true;
 
         tree.lvl = lvl;
-        tree.code = tree.code ? tree.code : tree.name.toLowerCase().replace(' ', '_').replace("\t", '_');
+        tree.code = tree.code ? tree.code : String(tree.name).toLowerCase().replace(' ', '_').replace("\t", '_');
         tree.has_childs = tree.childs.length > 0;
 
         tree._root_code = root_code;

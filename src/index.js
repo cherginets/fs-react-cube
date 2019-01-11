@@ -36,9 +36,11 @@ class Cube extends Component {
         });
     }
     static get_init_state(props) {
-        console.info('fs-react-cube - init', props);
+        if(props.debug) {
+            console.info('fs-react-cube - init', props);
+        }
         //Проверка пропсов
-        if (props.measures.length <= 2) error('Measures length must be greater than 1');
+        if (props.measures.length < 2) error('Measures length must be greater than 1');
 
         let measures = props.measures,
             measures_map = create_map(measures, 'code');
@@ -53,9 +55,10 @@ class Cube extends Component {
                 init_trees_map[measure.code] = i;
                 return SideTree.prepare_tree(measure.tree)
             });
-
-        console.log('init_trees', init_trees);
-        console.log('init_trees_map', init_trees_map);
+        if(props.debug) {
+            console.log('init_trees', init_trees);
+            console.log('init_trees_map', init_trees_map);
+        }
         let measures_top = measures_top_codes.map(measure_code => init_trees[init_trees_map[measure_code]]),
             measures_top_names = measures_top_codes.map(code => measures[measures_map[code]].name),
             measures_left = measures_left_codes.map(measure_code => init_trees[init_trees_map[measure_code]]),
@@ -150,13 +153,15 @@ class Cube extends Component {
         let trs_top = this.state.measures_top_tree.get_top_trs(),
             trs_left = this.state.measures_left_tree.get_left_trs();
 
-        console.groupCollapsed('fs-react-cube render()');
-        console.info('this.props', this.props);
-        console.info('trs_top', trs_top);
-        console.info('trs_left', trs_left);
-        console.info('measures_top_tree', this.state.measures_top_tree);
-        console.info('measures_left_tree', this.state.measures_left_tree);
-        console.groupEnd();
+        if(this.props.debug) {
+            console.groupCollapsed('fs-react-cube render()');
+            console.info('this.props', this.props);
+            console.info('trs_top', trs_top);
+            console.info('trs_left', trs_left);
+            console.info('measures_top_tree', this.state.measures_top_tree);
+            console.info('measures_left_tree', this.state.measures_left_tree);
+            console.groupEnd();
+        }
 
         let styling = {};
 
@@ -243,10 +248,9 @@ class Cube extends Component {
                             {trs_left.map((left, i) => {
                                 return <tr key={i}>
                                     {trs_top[trs_top.length - 1].tds.map((top, j) => {
-                                        let left_path = left.tds[left.tds.length - 1]._path_cell,
-                                            top_path = top._path_cell;
                                         return <td key={j}>
-                                            {this.props.getCell(left_path, top_path)}
+                                            {this.props.data[i] && typeof this.props.data[i][j] !== 'undefined' ?
+                                            this.props.data[i][j] : "-"}
                                         </td>
                                     })}
                                 </tr>
@@ -264,12 +268,22 @@ class Cube extends Component {
 Cube.defaultProps = {
     width: 700,
     debug: false,
-    onChange: () => { console.info('fs-react-cube - onChange'); },
-    onOpen: () => { console.info('fs-react-cube - onOpen'); },
-    onClose: () => { console.info('fs-react-cube - onClose'); },
+    onChange: () => {
+        // if (this.props.debug)
+            console.info('fs-react-cube - onChange');
+    },
+    onOpen: () => {
+        // if (this.props.debug)
+            console.info('fs-react-cube - onOpen');
+    },
+    onClose: () => {
+        // if (this.props.debug)
+            console.info('fs-react-cube - onClose');
+    },
 };
 
 Cube.propTypes = {
+    data: PropTypes.arrayOf(PropTypes.array),
     measures: PropTypes.arrayOf(PropTypes.shape({
         name: PropTypes.string,
         tree: PropTypes.shape({
@@ -283,7 +297,7 @@ Cube.propTypes = {
     measures_list_left: PropTypes.arrayOf(PropTypes.string), //Codes of left measures
     width: PropTypes.number,
 
-    getCell: PropTypes.func.isRequired,
+    // getCell: PropTypes.func.isRequired, // Deprecated
     onChange: PropTypes.func,
     onOpen: PropTypes.func,
     onClose: PropTypes.func,
