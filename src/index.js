@@ -40,36 +40,36 @@ class Cube extends Component {
             console.info('fs-react-cube - init', props);
         }
         //Проверка пропсов
-        if (props.measures.length < 2) error('Measures length must be greater than 1');
+        if (props.columns.length < 2) error('Measures length must be greater than 1');
 
-        let measures = props.measures,
-            measures_map = create_map(measures, 'code');
+        let columns = props.columns,
+            columns_map = create_map(columns, 'code');
 
-        const measures_top_codes = props.measures_list_top && props.measures_list_top.length > 0 ?
-            props.measures_list_top : [measures[0].code],
-            measures_left_codes = props.measures_list_left && props.measures_list_left.length > 0 ?
-                props.measures_list_left : [measures[1].code];
+        const columns_top_codes = props.columns_top && props.columns_top.length > 0 ?
+            props.columns_top : [columns[0].code],
+            columns_left_codes = props.columns_left && props.columns_left.length > 0 ?
+                props.columns_left : [columns[1].code];
 
         let init_trees_map = {},
-            init_trees = measures.map((measure, i) => {
-                init_trees_map[measure.code] = i;
-                return SideTree.prepare_tree(measure.tree)
+            init_trees = columns.map((column, i) => {
+                init_trees_map[column.code] = i;
+                return SideTree.prepare_tree(column.tree)
             });
         if(props.debug) {
             console.log('init_trees', init_trees);
             console.log('init_trees_map', init_trees_map);
         }
-        let measures_top = measures_top_codes.map(measure_code => init_trees[init_trees_map[measure_code]]),
-            measures_top_names = measures_top_codes.map(code => measures[measures_map[code]].name),
-            measures_left = measures_left_codes.map(measure_code => init_trees[init_trees_map[measure_code]]),
-            measures_left_names = measures_left_codes.map(code => measures[measures_map[code]].name);
+        let columns_top = columns_top_codes.map(column_code => init_trees[init_trees_map[column_code]]),
+            columns_top_names = columns_top_codes.map(code => columns[columns_map[code]].name),
+            columns_left = columns_left_codes.map(column_code => init_trees[init_trees_map[column_code]]),
+            columns_left_names = columns_left_codes.map(code => columns[columns_map[code]].name);
 
         return {
-            measures_top: measures_top,
-            measures_left: measures_left,
-            measures_left_names: measures_left_names,
-            measures_top_tree: new SideTree(measures_top),
-            measures_left_tree: new SideTree(measures_left),
+            columns_top: columns_top,
+            columns_left: columns_left,
+            columns_left_names: columns_left_names,
+            columns_top_tree: new SideTree(columns_top),
+            columns_left_tree: new SideTree(columns_left),
             props_hash: obj_hash(props),
         };
     }
@@ -103,12 +103,12 @@ class Cube extends Component {
                 }
             });
 
-        let full_tree = this.state.measures_top_tree.set_element(tree._path, {
+        let full_tree = this.state.columns_top_tree.set_element(tree._path, {
             ...tree,
             childs: new_childs,
             hidden_childs: new_hidden,
         });
-        this.setState({measures_top_tree: full_tree}, () => {
+        this.setState({columns_top_tree: full_tree}, () => {
             if (!new_hidden) this.props.onOpen();
             else this.props.onClose();
             this.props.onChange();
@@ -133,13 +133,13 @@ class Cube extends Component {
                 }
             });
 
-        let full_tree = this.state.measures_left_tree.set_element(tree._path, {
+        let full_tree = this.state.columns_left_tree.set_element(tree._path, {
             ...tree,
             childs: new_childs,
             hidden_childs: new_hidden,
         });
 
-        this.setState({measures_left_tree: full_tree}, () => {
+        this.setState({columns_left_tree: full_tree}, () => {
             if (!new_hidden) this.props.onOpen();
             else this.props.onClose();
             this.props.onChange();
@@ -147,19 +147,19 @@ class Cube extends Component {
     }
 
     render() {
-        let top_rows_count = this.state.measures_top.length,
-            left_cols_count = this.state.measures_left.length;
+        let top_rows_count = this.state.columns_top.length,
+            left_cols_count = this.state.columns_left.length;
 
-        let trs_top = this.state.measures_top_tree.get_top_trs(),
-            trs_left = this.state.measures_left_tree.get_left_trs();
+        let trs_top = this.state.columns_top_tree.get_top_trs(),
+            trs_left = this.state.columns_left_tree.get_left_trs();
 
         if(this.props.debug) {
             console.groupCollapsed('fs-react-cube render()');
             console.info('this.props', this.props);
             console.info('trs_top', trs_top);
             console.info('trs_left', trs_left);
-            console.info('measures_top_tree', this.state.measures_top_tree);
-            console.info('measures_left_tree', this.state.measures_left_tree);
+            console.info('columns_top_tree', this.state.columns_top_tree);
+            console.info('columns_left_tree', this.state.columns_left_tree);
             console.groupEnd();
         }
 
@@ -206,8 +206,8 @@ class Cube extends Component {
                             width: `${styling.left_width}px`,
                             height: `${styling.top_height + 1}px`,
                         }}>
-                            {this.state.measures_left_names.map((name, i) => {
-                                return <div key={i} className="frc-table-left-heads__head" style={{width: `${100 / this.state.measures_left_names.length}%`}}>
+                            {this.state.columns_left_names.map((name, i) => {
+                                return <div key={i} className="frc-table-left-heads__head" style={{width: `${100 / this.state.columns_left_names.length}%`}}>
                                     {name}
                                 </div>;
                             })}
@@ -284,7 +284,7 @@ Cube.defaultProps = {
 
 Cube.propTypes = {
     data: PropTypes.arrayOf(PropTypes.array),
-    measures: PropTypes.arrayOf(PropTypes.shape({
+    columns: PropTypes.arrayOf(PropTypes.shape({
         name: PropTypes.string,
         tree: PropTypes.shape({
             name: PropTypes.string.isRequired,
@@ -293,8 +293,8 @@ Cube.propTypes = {
             childs: PropTypes.array, //Такие же как и этот объект, рекурсивно (name, code, childs)
         }),
     })).isRequired,
-    measures_list_top: PropTypes.arrayOf(PropTypes.string), //Codes of top measures
-    measures_list_left: PropTypes.arrayOf(PropTypes.string), //Codes of left measures
+    columns_top: PropTypes.arrayOf(PropTypes.string), //Codes of top columns
+    columns_left: PropTypes.arrayOf(PropTypes.string), //Codes of left columns
     width: PropTypes.number,
 
     // getCell: PropTypes.func.isRequired, // Deprecated
