@@ -1,24 +1,24 @@
 import {error, create_map, copy} from './helper';
 
 export default class SideTree {
-    constructor(measures) {
-        this.tree = this.init_tree(measures);
+    constructor(columns) {
+        this.tree = this.init_tree(columns);
         this.tree = this.set_paths(this.tree);
     }
 
-    init_tree(measures) {
-        let result_tree = copy(measures[0]);
+    init_tree(columns) {
+        let result_tree = copy(columns[0]);
         let hidden_childs = true;
         if(typeof result_tree.hidden_childs !== 'undefined' && result_tree.hidden_childs === false) {
             hidden_childs = false;
         }
         result_tree.childs = result_tree.childs.map(child => ({...child, hidden: hidden_childs}));
 
-        if (measures[1]) {
+        if (columns[1]) {
             result_tree = SideTree.iterator_with_childs(result_tree, (tree) => {
                 return {
                     ...tree,
-                    _subtree: this.init_tree(measures.slice(1, measures.length)),
+                    _subtree: this.init_tree(columns.slice(1, columns.length)),
                 }
             });
         }
@@ -184,7 +184,7 @@ export default class SideTree {
     };
 
     static prepare_tree(tree, lvl = 0, path = [], root_code = tree.code) {
-        tree._measure_path = path;
+        tree._column_path = path;
         if (tree.childs && tree.childs.length > 0) {
             tree.childs = tree.childs.map((child, i) => SideTree.prepare_tree(child, lvl + 1, path.concat(['childs', i]), root_code))
         } else {
